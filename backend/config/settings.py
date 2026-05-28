@@ -99,3 +99,5 @@ MEDIA_ROOT = os.path.join(
 )
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+

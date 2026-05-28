@@ -59,6 +59,10 @@ def remove_bg(request):
         'processed',
         filename
     )
+    os.makedirs(
+    os.path.dirname(processed_path),
+    exist_ok=True
+)
 
     with open(processed_path, 'wb') as output_file:
         output_file.write(output_image)
@@ -131,6 +135,10 @@ def face_detect(request):
         'processed',
         filename
     )
+    os.makedirs(
+    os.path.dirname(processed_path),
+    exist_ok=True
+)
 
     cv2.imwrite(
         processed_path,
@@ -203,6 +211,10 @@ def passport_photo(request):
         'processed',
         filename
     )
+    os.makedirs(
+    os.path.dirname(processed_path),
+    exist_ok=True
+)
 
     with open(processed_path, 'wb') as output_file:
         output_file.write(output_image)
