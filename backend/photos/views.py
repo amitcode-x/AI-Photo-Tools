@@ -1,17 +1,14 @@
 import os
 import uuid
-import cv2
 import numpy as np
 
 from PIL import Image
+from io import BytesIO
 
 from django.conf import settings
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-from rembg import remove
-from io import BytesIO
 
 
 # ==============================
@@ -21,12 +18,24 @@ from io import BytesIO
 @api_view(['POST'])
 def remove_bg(request):
 
+    from rembg import remove
+
     image = request.FILES.get('image')
 
     if not image:
         return Response({
             "error": "No image uploaded"
         }, status=400)
+
+    os.makedirs(
+        os.path.join(settings.MEDIA_ROOT, 'uploads'),
+        exist_ok=True
+    )
+
+    os.makedirs(
+        os.path.join(settings.MEDIA_ROOT, 'processed'),
+        exist_ok=True
+    )
 
     filename = f"{uuid.uuid4()}.png"
 
@@ -59,10 +68,8 @@ def remove_bg(request):
     )
 
     return Response({
-        "processed_image":
-        processed_image_url
+        "processed_image": processed_image_url
     })
-
 
 # ==============================
 # FACE DETECTION
@@ -70,6 +77,7 @@ def remove_bg(request):
 
 @api_view(['POST'])
 def face_detect(request):
+    import cv2
 
     image = request.FILES.get('image')
 
@@ -145,6 +153,8 @@ def face_detect(request):
 
 @api_view(['POST'])
 def passport_photo(request):
+    import cv2
+    from rembg import remove
 
     image = request.FILES.get('image')
 

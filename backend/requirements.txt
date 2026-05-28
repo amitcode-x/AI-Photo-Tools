@@ -37,7 +37,6 @@ rpds-py==0.27.1
 scikit-image==0.24.0
 scipy==1.13.1
 sqlparse==0.5.5
-sympy==1.14.0
 tifffile==2024.8.30
 tqdm==4.67.3
 typing_extensions==4.15.0
