@@ -7,6 +7,9 @@ from io import BytesIO
 
 from django.conf import settings
 
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -64,12 +67,22 @@ def remove_bg(request):
     exist_ok=True
 )
 
-    with open(processed_path, 'wb') as output_file:
-        output_file.write(output_image)
+    # with open(processed_path, 'wb') as output_file:
+    #     output_file.write(output_image)
+
+    # processed_image_url = request.build_absolute_uri(
+    #     f"/media/processed/{filename}"
+    # )
+
+    relative_path = f"processed/{filename}"
+    default_storage.save(
+    relative_path,
+    ContentFile(output_image))
 
     processed_image_url = request.build_absolute_uri(
-        f"/media/processed/{filename}"
+        f"/media/{relative_path}"
     )
+
 
     return Response({
         "processed_image": processed_image_url
@@ -140,14 +153,27 @@ def face_detect(request):
     exist_ok=True
 )
 
-    cv2.imwrite(
-        processed_path,
-        img
-    )
+    # cv2.imwrite(
+    #     processed_path,
+    #     img
+    # )
+
+    # processed_image_url = request.build_absolute_uri(
+    #     f"/media/processed/{filename}"
+    # )
+
+    relative_path = f"processed/{filename}"
+    _, buffer = cv2.imencode('.png', img)
+
+
+    default_storage.save(
+    relative_path,
+    ContentFile(buffer.tobytes()))
 
     processed_image_url = request.build_absolute_uri(
-        f"/media/processed/{filename}"
-    )
+    f"/media/{relative_path}"
+)
+
 
     return Response({
         "processed_image":
@@ -386,12 +412,23 @@ def passport_photo(request):
 
             count += 1
 
-    canvas.save(processed_path)
+    buffer = BytesIO()
+
+    canvas.save(
+    buffer,
+    format="PNG"
+)
+
+    relative_path = f"processed/{filename}"
+
+    default_storage.save(
+    relative_path,
+    ContentFile(buffer.getvalue())
+)
 
     processed_image_url = request.build_absolute_uri(
-        f"/media/processed/{filename}"
+        f"/media/{relative_path}"
     )
-
     return Response({
         "processed_image":
         processed_image_url
@@ -450,13 +487,16 @@ def image_reducer(request):
 
         quality -= 5
 
-    with open(processed_path, 'wb') as f:
-        f.write(buffer.getvalue())
+    relative_path = f"processed/{filename}"
+
+    default_storage.save(
+    relative_path,
+    ContentFile(buffer.getvalue())
+)
 
     processed_image_url = request.build_absolute_uri(
-        f"/media/processed/{filename}"
-    )
-
+    f"/media/{relative_path}"
+)
     return Response({
 
         "processed_image":
