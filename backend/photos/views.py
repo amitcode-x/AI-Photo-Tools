@@ -242,13 +242,8 @@ def passport_photo(request):
     exist_ok=True
 )
 
-    with open(processed_path, 'wb') as output_file:
-        output_file.write(output_image)
-
     image_pil = Image.open(
-        processed_path
-    ).convert("RGBA")
-
+    BytesIO(output_image)).convert("RGBA")
     # BG COLORS
     colors = {
         "white": (255, 255, 255, 255),
